@@ -1,3 +1,21 @@
+<?php
+    define("PATH_ROOT", realpath($_SERVER["DOCUMENT_ROOT"]) );
+    require_once(PATH_ROOT.'/caphleave/utils/Utils.php');
+    require_once PATH_ROOT.'/caphleave/controller/index.php';
+    Utils::startSession();
+
+    if (!isset($_SESSION['user_id'])) {
+      header("Location: http://127.0.0.1:90/caphleave/view/auth/as-admin/");  
+    }
+
+    $loggedInUserID = $_SESSION['user_id'];
+
+    $controller = new Controller();
+    $numOfManagers = $controller->countManagers($loggedInUserID);
+    $numOfEmpoyees =  $controller->countEmployees($loggedInUserID);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -56,7 +74,7 @@
             <a href="../../employer/settings/index.html"><img src="../../assets/brand/help.svg" width="20"></a>
           </li>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Thabang Mangope<span class="caret"></span></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Nkosi R<span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li><a href="../../employer/profile/index.html">View profile</a></li>
               <li><a href="../profile/">View profile</a></li>
@@ -78,8 +96,8 @@
     <div class="row panel">
       <div class="col-md-12 col-xs-12">
         <div class="row">
-          <div class="col-md-3 col-xs-3"><a href="../../employer/people/index.html"><center><h2>28</h2><span>employees</span><br><img src="../../assets/brand/group.svg" width="20" alt="group" /></center><a/></div>
-          <div class="col-md-3 col-xs-3"><a href="#"><center><h2>8</h2><span>managers</span><br><img src="../../assets/brand/user-1.svg" width="20" alt="group" /></center></a></div>
+          <div class="col-md-3 col-xs-3"><a href="../../employer/people/index.html"><center><h2><?php echo $numOfEmpoyees; ?></h2><span>employees</span><br><img src="../../assets/brand/group.svg" width="20" alt="group" /></center><a/></div>
+          <div class="col-md-3 col-xs-3"><a href="#"><center><h2><?php echo $numOfManagers ?></h2><span>managers</span><br><img src="../../assets/brand/user-1.svg" width="20" alt="group" /></center></a></div>
           <div class="col-md-3 col-xs-3"><a href="#"><center><h2>8</h2><span>teams</span><br><img src="../../assets/brand/group.svg" width="20" alt="group" /></center></a></div>
           <div class="col-md-3 col-xs-3"><a href="../../employer/calendar/index.html"><center><h2>1908</h2><span>total days left</span><br><img src="../../assets/brand/calendar.svg" width="20" alt="group" /></center></a></div>
         </div>

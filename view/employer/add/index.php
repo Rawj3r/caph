@@ -1,3 +1,75 @@
+<?php
+    define("PATH_ROOT", realpath($_SERVER["DOCUMENT_ROOT"]) );
+    require_once(PATH_ROOT.'/caphleave/utils/Utils.php');
+    require_once PATH_ROOT.'/caphleave/controller/index.php';
+    Utils::startSession();
+
+    if (!isset($_SESSION['user_id'])) {
+      header("Location: http://127.0.0.1:90/caphleave/view/auth/as-admin/");  
+    }
+
+    $loggedInUserID = $_SESSION['user_id'];
+
+    $controller = new Controller();
+    $getProvinces = $controller->getProvinces();
+    $getManangers = $controller->getManangers($loggedInUserID);
+    $companyID = $controller->getCompanyID($loggedInUserID);
+
+    if (isset($_POST['add'])) {
+        $firstname = $_POST['firstname'];
+        $lastname = $_POST['lastname'];
+        $identitynumber = $_POST['identitynumber'];
+        $address = $_POST['address'];
+        $city = $_POST['city'];
+        $province = $_POST['province'];
+        $email = $_POST['email'];
+        $dob = $_POST['dob'];
+        $ismanager = $_POST['ismanager'];
+        $manager = $_POST['manager'];
+        $cell = $_POST['cell'];
+        $tel = $_POST['tel'];
+        $jobtitle = $_POST['jobtitle'];
+        $date_hired = $_POST['date_hired'];
+        $code = $_POST['code'];
+
+        if ($firstname != '' && $lastname != '' && $identitynumber != '' && $address != '' && $city != '' && $province != '' && $email != '' && $dob != '' && $ismanager != '' && $manager != '' && $cell != '' && $jobtitle != '' && $date_hired != '' && $code != '') {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                echo"
+                <script type=\"text/javascript\">
+                    alert(\"Invalid email, please check your email\");
+                </script>";
+            }else{
+                if (Utils::validatePhoneNumber($cell)) {
+
+                    $data = array('first_name' => $firstname, 'last_name' => $lastname, 'email' => $email, 'isManager' => $ismanager, 'HireDate' => $date_hired, 'CompanyId' => $companyID, 'IdNumber' => $identitynumber, 'Address1' => $address, 'City' => $city, 'ProvinceId' => $province, 'PostalCode' => $code, 'HomeNumber' => $tel, 'DateOfBirth' => $dob, 'ManagerId' => $manager, 'JobTitle' => $jobtitle);
+                    if ($controller->addEmployee($data)) {
+                        header("Location: http://127.0.0.1:90/caphleave/view/employer/people/index.php");  
+                    }else{
+                        echo"
+                <script type=\"text/javascript\">
+                    alert(\"Failed, could not add employee.\");
+                </script>";
+                    }
+
+                }else{
+                     echo"
+                <script type=\"text/javascript\">
+                    alert(\"Invalid cellphone number.\");
+                </script>";
+                }
+            }
+        }else{
+            echo "
+            <script type=\"text/javascript\">
+            alert(\"Please fill in all employee information.\");
+            </script>
+        ";
+        }
+    }
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en" style="background: #fff;">
 
@@ -10,7 +82,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>hello Cap-H</title>
+    <title>Hello Cap-H</title>
 
     <link href="../../assets/css/bootstrap.css" rel="stylesheet">
     <link href="../../assets/css/mdb.css" rel="stylesheet">
@@ -92,7 +164,7 @@
 <h3 class="large-heading">Employee Intake Form</h3>
                 <div class="row">
                     <div class="col-md-12 col-xs-12">
-                        <form action="" method="">
+                        <form action="index.php" method="POST" name="add">
                             <div class="row">
                                 <div class="col-md-12">
                                     <hr>
@@ -102,19 +174,45 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="first-name-input" class="small-heading">First name</label>
-                                        <input type="text" class="form-control no-radius" id="first-name-input" placeholder="John">
+                                        <input type="text" name="firstname" class="form-control no-radius" id="first-name-input" placeholder="John">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="second-name-input" class="small-heading">Second name</label>
-                                        <input type="text" class="form-control no-radius" id="second-name-input" placeholder="Doe">
+                                        <label for="second-name-input" class="small-heading">Last name</label>
+                                        <input type="text" name="lastname" class="form-control no-radius" id="second-name-input" placeholder="Doe">
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="identity-input" class="small-heading">SA Identity number</label>
-                                        <input type="text" class="form-control no-radius" id="identity-input" placeholder="">
+                                        <input type="text" name="identitynumber" class="form-control no-radius" id="identity-input" placeholder="">
+                                    </div>
+                                </div>
+                                 <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="identity-input" class="small-heading">Job title</label>
+                                        <input type="text" name="jobtitle" class="form-control no-radius" id="identity-input" placeholder="Developer">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="phone-input" class="small-heading">Date hired</label>
+                                                <input type="date" name="date_hired" class="form-control no-radius" id="phone-input">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                  <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="phone-input" class="small-heading">Birthday</label>
+                                                <input type="date" name="dob" class="form-control no-radius" id="phone-input">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -127,22 +225,32 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="address-input" class="small-heading">Address</label>
-                                        <input type="text" class="form-control no-radius" id="address-input" placeholder="123 xyz Street">
+                                        <input type="text" name="address" class="form-control no-radius" id="address-input" placeholder="123 xyz Street">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="city-input" class="small-heading">City</label>
-                                        <input type="text" class="form-control no-radius" id="city-input" placeholder="Central Park">
+                                        <input type="text" name="city" class="form-control no-radius" id="city-input" placeholder="Central Park">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="second-name-input" class="small-heading">Province</label>
-                                        <!--input type="text" class="form-control no-radius" id="second-name-input" placeholder="Doe"-->
-                                        <select class="form-control select">
-                                                <option></option>
+                                        <select name="province" name="province" class="form-control select">
+                                                <option>Please select one</option>
+                                                <?php
+                                                    while ($row2 = $getProvinces->fetch(PDO::FETCH_ASSOC)) {
+                                                        echo "<option value='".$row2['ProvinceId']."'>".$row2['Name']."</option>";
+                                                    }
+                                                ?>
                                             </select>
+                                    </div>
+                                </div>
+                                  <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="address-input" class="small-heading">Zip code</label>
+                                        <input type="text" name="code" class="form-control no-radius" id="address-input" placeholder="0001">
                                     </div>
                                 </div>
                             </div>
@@ -155,19 +263,19 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="email-input" class="small-heading">Email address</label>
-                                        <input type="email" class="form-control no-radius" id="email-input" placeholder="johndoe@example.com">
+                                        <input type="email" name="email" class="form-control no-radius" id="email-input" placeholder="johndoe@example.com">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="phone-input" class="small-heading">Phone number (Home)</label>
-                                        <input type="text" class="form-control no-radius" id="phone-input" placeholder="+27 ">
+                                        <input type="text" name="tel" class="form-control no-radius" id="phone-input" placeholder="+27 ">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="phone-input" class="small-heading">Phone number (Mobile)</label>
-                                        <input type="text" class="form-control no-radius" id="phone-input" placeholder="+27 ">
+                                        <input type="text" name="cell" class="form-control no-radius" id="phone-input" placeholder="+27 ">
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -175,7 +283,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="phone-input" class="small-heading">Birthday</label>
-                                                <input type="date" class="form-control no-radius" id="phone-input">
+                                                <input type="date" name="dob" class="form-control no-radius" id="phone-input">
                                             </div>
                                         </div>
                                     </div>
@@ -194,7 +302,7 @@
                                             <div class="form-group">
 
                                                 <label for="is-manager-input" class="small-heading control control--radio">No
-                                                        <input type="radio" id="is-manager-input" name="radio"/>
+                                                        <input type="radio" value="3" name="ismanager" id="is-manager-input" name="radio"/>
                                                         <div class="control__indicator"></div>
                                                     </label>
                                             </div>
@@ -202,7 +310,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="is-not-manager-input" class="small-heading control control--radio">Yes
-                                                        <input type="radio" id="is-not-manager-input" name="radio"/>
+                                                        <input type="radio" value="2" name="ismanager" id="is-not-manager-input" name="radio"/>
                                                         <div class="control__indicator"></div>
                                                     </label>
                                             </div>
@@ -212,8 +320,13 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="phone-input" class="small-heading">Is managed by</label>
-                                        <select class="form-control select">
+                                        <select name="manager" class="form-control select">
                                                 <option>Assign a manager</option>
+                                                 <?php
+                                                    while ($row = $getManangers->fetch(PDO::FETCH_ASSOC)) {
+                                                        echo "<option value='".$row['user_id']."'>".$row['Name'].' '.$row['Surname']."</option>";
+                                                    }
+                                                ?>
                                             </select>
                                     </div>
                                 </div>
@@ -221,7 +334,8 @@
                                     <hr>
                                 </div>
                             </div>
-                            <a href="../../employer/people/index.html" class="btn btn-primary btn-block no-radius">Create employee</a>
+                            <!-- <a href="../../employer/people/index.html" class="btn btn-primary btn-block no-radius">Create employee</a> -->
+                            <input type="submit" value="Create employee" name="add" class="btn btn-primary btn-block no-radius"/>
                         </form>
               </div>
             </div>
@@ -230,7 +344,7 @@
     </div>
     <footer class="footer">
         <div class="container">
-            <p class="text-muted">Cap &copy; 2016</p>
+            <p class="text-muted">Cap &copy; <?php echo(date('Y')); ?></p>
         </div>
     </footer>
     <script src="../../assets/js/jquery.js"></script>

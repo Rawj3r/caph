@@ -1,3 +1,24 @@
+<?php
+    define("PATH_ROOT", realpath($_SERVER["DOCUMENT_ROOT"]) );
+    require_once(PATH_ROOT.'/caphleave/utils/Utils.php');
+    require_once PATH_ROOT.'/caphleave/controller/index.php';
+    Utils::startSession();
+
+    if (!isset($_SESSION['user_id'])) {
+      header("Location: http://127.0.0.1:90/caphleave/view/auth/as-admin/");  
+    }
+
+    $loggedInUserID = $_SESSION['user_id'];
+
+    $controller = new Controller();
+    $listEmployees = $controller->listEmployees($loggedInUserID);
+
+    // while ($row1 = $listEmployees->fetch(PDO::FETCH_ASSOC)){
+    //   print_r($row1);
+    // }
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -44,9 +65,9 @@
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-          <li><a href="../../employer/dashboard/index.html">Dashboard</a></li>
+          <li><a href="../../employer/dashboard/index.php">Dashboard</a></li>
           <li><a href="../../employer/calendar/index.html">Calendar</a></li>
-          <li><a href="../../employer/people/index.html">People</a></li>
+          <li><a href="../../employer/people/index.php">People</a></li>
           <li><a href="../../employer/notifications/index.html">Notifications</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
@@ -77,7 +98,7 @@
   </nav>
   <div class="container">
     <div class="row">
-      <p class="text-right"><a href="../../employer/add/index.html" class="btn btn-default">+ add employee</a></p>
+      <p class="text-right"><a href="../../employer/add/index.php" class="btn btn-default">+ add employee</a></p>
     </div>
     <div class="row panel hidden-sm-down">
       <div class="col-md-12 col-xs-12 table-responsive">
@@ -92,6 +113,10 @@
             </tr>
           </thead>
           <tbody>
+            <?php
+            while ($row1 = $listEmployees->fetch(PDO::FETCH_ASSOC)){
+              // print_r($row1);
+            ?>
             <tr>
               <td width="30%">
                 <div class="media">
@@ -99,8 +124,8 @@
                     <img class="img-circle z-depth-3" src="../../assets/img/team-avatar-1.jpg" width="60" alt="">
                   </a>
                   <div class="media-body">
-                    <h4 class="media-heading">John Doe</h4>
-                    <label class="text-muted"><small>UI developer</small></label>
+                    <h4 class="media-heading"><?php echo $row1['Name'].' '.$row1['Surname']; ?> </h4>
+                    <label class="text-muted"><small><?php echo $row1['JobTitle']; ?></small></label>
                   </div>
                 </div>
               </td>
@@ -114,42 +139,14 @@
               </td>
               <td width="10%">
                 <br>
-                <label class="small">22/09/2016</label>
+                <label class="small"><?php echo $row1['HireDate']; ?></label>
               </td>
               <td width="10%">
                 <br>
-                <label class="small">22/09/2016</label>
+                <label class="small"><?php echo $row1['LastModified']; ?></label>
               </td>
             </tr>
-            <tr>
-              <td width="30%">
-                <div class="media">
-                  <a class="media-left waves-light avatar-listed" data-toggle="modal" data-target="#book-time">
-                    <img class="img-circle" src="../../assets/img/team-avatar-3.jpg" width="60" alt="">
-                  </a>
-                  <div class="media-body">
-                    <h4 class="media-heading">Ramsy Baltomore</h4>
-                    <label class="text-muted"><small>iOS developer</small></label>
-                  </div>
-                </div>
-              </td>
-              <td width="20%">
-                <br>
-                <label class="small"><span class="label label-success">Manages</span> <span class="label label-warning">Administrative</span></label>
-              </td>
-              <td width="20%">
-                <br>
-                <label class="small">iOS</label>
-              </td>
-              <td width="10%">
-                <br>
-                <label class="small">22/09/2016</label>
-              </td>
-              <td width="10%">
-                <br>
-                <label class="small">22/09/2016</label>
-              </td>
-            </tr>
+            <?php } ?>
           </tbody>
         </table>
         <nav aria-label="...">

@@ -3,6 +3,8 @@ define("PATH_ROOT", realpath($_SERVER["DOCUMENT_ROOT"]) );
 
 // require_once 'controller/index.php';
 require_once(PATH_ROOT.'/caphleave/controller/index.php');
+    require_once(PATH_ROOT.'/caphleave/utils/Utils.php');
+
 
 
 $controller = new Controller();
@@ -20,6 +22,7 @@ if (!$controller->isUserExist($data['email'])) {
 	// $controller->getLoggedInUser(4);
 	// $controller->getManangers(4);
 	// echo(json_encode($controller->listEmployees()));
-	print_r($controller->isEmployee(3));
+	// print_r($controller->isEmployee(3));
+	Utils::sendMail();
 }
 

@@ -25,7 +25,22 @@
 	            </script>";
       		}else{
       			if (Utils::validatePhoneNumber($phone_number)) {
-      				$controller->register($data);
+      				if (!$controller->isUserExist($data['email'])) {
+						if ($controller->register($data)) {
+							header("Location: http://127.0.0.1:90/caphleave/view/auth/as-admin/company-info/");
+						}else{
+							echo"
+			            <script type=\"text/javascript\">
+			            	alert(\"Account creation failed, please try again.\");
+			            </script>";
+						}
+						// $controller->addEmployee($data);
+					}else{
+						echo"
+			            <script type=\"text/javascript\">
+			            	alert(\"Email already exists, please try to recover your account.\");
+			            </script>";
+					}
       			}else{
       				echo"
 		            <script type=\"text/javascript\">

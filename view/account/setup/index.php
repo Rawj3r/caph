@@ -1,53 +1,46 @@
 <?php
 
-  define("PATH_ROOT", realpath($_SERVER["DOCUMENT_ROOT"]) );
-  require_once(PATH_ROOT.'/caphleave/utils/Utils.php');
-  require_once PATH_ROOT.'/caphleave/controller/index.php';
-  Utils::startSession();
-  $controller = new Controller();
+	define("PATH_ROOT", realpath($_SERVER["DOCUMENT_ROOT"]) );
+    require_once(PATH_ROOT.'/caphleave/utils/Utils.php');
+    require_once PATH_ROOT.'/caphleave/controller/index.php';
+    Utils::startSession();
 
-  if(isset($_POST['login'])){
+    $controller = new Controller();
 
-    $email = $_POST['email'];
-    $password = $_POST['password'];
 
-    if ($email != '' && $password != '') {
-      if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo "
-            <script type=\"text/javascript\">
-            alert(\"Invalid email, please verify\");
+    if (isset($_POST['setup'])) {
+    	$email = $_POST['email'];
+    	$password = $_POST['password'];
+    	$confirmpassword = $_POST['confirmpassword'];
 
-            </script>
-        "; 
-      }else{
-        $data = array('email' => $email, 'pass' => $password);
-        if ($controller->login($data)) {
-
-          if ($controller->isManager($_SESSION['user_id']) || $controller->isAdmin($_SESSION['user_id'])) {
-            header("Location: http://127.0.0.1:90/caphleave/view/employer/dashboard/");
-          }else if($controller->isEmployee($_SESSION['user_id'])){
-            header("Location: http://127.0.0.1:90/caphleave/view/employee/dashboard/");
-          }
-
-        }else{
-          echo "
-            <script type=\"text/javascript\">
-            alert(\"Login invalid.\");
-            </script>
-        ";        }
-      }
-    }else{
-       echo "
-            <script type=\"text/javascript\">
-            alert(\"Please fill in your credentials.\");
-
-            </script>
-        "; 
+    	if ($email != '' && $password != '' && $confirmpassword != '') {
+    		 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                echo"
+                <script type=\"text/javascript\">
+                    alert(\"Invalid email, please check your email\");
+                </script>";
+            }else{
+            	if ($password == $confirmpassword) {
+            		$data = array('email' => $email, 'pass' => $password);
+            		if ($controller->activateAccount($data)) {
+            			header("Location: http://127.0.0.1:90/caphleave/view/auth/as-admin/");
+            		}
+            	}else{
+            		  echo"
+		                <script type=\"text/javascript\">
+		                    alert(\"Failed, passwords do not match\");
+		                </script>";
+            	}
+            }
+    	}else{
+    		  echo"
+                <script type=\"text/javascript\">
+                    alert(\"Please fill all fields.\");
+                </script>";
+    	}
     }
 
-  }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -58,13 +51,13 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../../assets/brand/favicon.ico">
+    <link rel="icon" href="../../../favicon.ico">
 
-    <title>Sign In</title>
+    <title>Setup account</title>
 
     <link href="../../assets/css/bootstrap.css" rel="stylesheet">
     <link href="../../assets/css/mdb.css" rel="stylesheet">
-    <link href="../assets/css/bootstrap-year-calendar.css" rel="stylesheet">
+    <link href="../../assets/css/bootstrap-year-calendar.css" rel="stylesheet">
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
@@ -117,38 +110,32 @@
     <div class="container">
             <div class="row row-centered">
               <div class="col-md-5 col-xs-12 col-centered">
-		<center><h3>Sign In</h3></center>
+		<center><h3>Continue your account setup</h3></center>
 		<br>
 		<br>
-                  <form action="index.php" method="POST">
+                  <form action="index.php" method="POST" name="setup">
                       <div class="form-group">
                           <label for="email-input">Email address</label>
                           <input type="email" name="email" class="form-control no-radius" id="email-input" placeholder="Email">
                       </div>
                       <div class="form-group">
                           <label for="password-input">Password</label>
-                          <input type="password" name="password" class="form-control no-radius" id="password-input" placeholder="Password">
+                          <input type="password" name="password" class="form-control no-radius" id="email-input" placeholder="Password">
                       </div>
                       <div class="form-group">
-                        <label class="control control--checkbox" for="keep-me-in-input" class="small-heading"> <span style="font-size: .8rem;">Keep me signed in</span>
-                          <input type="checkbox" id="keep-me-in-input"/>
-                          <div class="control__indicator"></div>
-                        </label>
+                          <label for="password-input">Confirm Password</label>
+                          <input type="password" name="confirmpassword" class="form-control no-radius" id="email-input" placeholder="Confirm password">
                       </div>
-                      <!-- <a href="../../employer/dashboard/index.html" class="btn btn-primary btn-block no-radius">Sign in</a> -->
-                      <input type="submit" name="login" class="btn btn-primary btn-block no-radius" value="Sign in" />
+                      <!-- <button type="submit" class="btn btn-primary btn-block no-radius">Send me instructions</button> -->
+                      <input type="submit" name="setup" value="Continue" class="btn btn-primary btn-block no-radius">
                   </form>
-                  <br>
-                  <center><label class="label-heading">Don't have an account? <a href="../../auth/as-admin/signup/index.php">Create one!</a></label></center>
-                  <br>
-                  <center><label class="label-heading"><a href="../../recover-account/">Forgot my password.</a></label></center>
               </div>
             </div>
         </div>
     </div>
     <footer class="footer">
         <div class="container">
-            <p class="text-muted">Cap &copy; <?php echo(date('Y')) ?> </p>
+            <p class="text-muted">Cap H &copy; <?php echo(date('Y')); ?></p>
         </div>
     </footer>
     <script src="../../assets/js/jquery.js"></script>
@@ -159,6 +146,5 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="../../assets/js/src/ie10-viewport-bug-workaround.js"></script>
 </body>
-
 
 </html>
