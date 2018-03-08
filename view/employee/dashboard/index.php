@@ -1,3 +1,27 @@
+<?php
+    define("PATH_ROOT", realpath($_SERVER["DOCUMENT_ROOT"]) );
+    require_once(PATH_ROOT.'/caphleave/utils/Utils.php');
+    require_once PATH_ROOT.'/caphleave/controller/index.php';
+    Utils::startSession();
+
+    if (!isset($_SESSION['user_id'])) {
+      header("Location: http://127.0.0.1:90/caphleave/view/auth/as-admin/");  
+    }
+
+    $loggedInUserID = $_SESSION['user_id'];
+
+    $controller = new Controller();
+    $listEmployees = $controller->listEmployees($loggedInUserID);
+
+    $controller = new Controller();
+    $numOfDaysWorked = Utils::getWorkingDays($controller->getLoggedInUser($loggedInUserID)[0]['hireDate'], date('Y-m-d'));
+
+    // while ($row1 = $listEmployees->fetch(PDO::FETCH_ASSOC)){
+    //   print_r($row1);
+    // }
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -43,28 +67,28 @@
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-					<li><a href="../../employee/dashboard/index.html">Dashboard</a></li>
-          <li><a href="../../employee/calendar/index.html">Calendar</a></li>
-					<li><a href="../../employee/notifications/index.html">Notifications</a></li>
+					<li><a href="../../employee/dashboard/index.php">Dashboard</a></li>
+          <li><a href="../../employee/calendar/index.php">Calendar</a></li>
+					<li><a href="../../employee/notifications/index.php">Notifications</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li>
             <a href="../notifications/"><img src="../../assets/brand/bell.svg" width="20"></a>
           </li>
-          <li>
+          <li style="display:none">
             <a href=""><img src="../../assets/brand/help.svg" width="20"></a>
           </li>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Thabang Mangope<span class="caret"></span></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo($controller->getLoggedInUser($loggedInUserID)[0]['surname'].' '.$controller->getLoggedInUser($loggedInUserID)[0]['name']); ?><span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li class="dropdown-header">Profile</li>
-              <li><a href="../../employee/profile/index.html">View profile</a></li>
-              <li><a href="#">Edit profile</a></li>
-              <li><a href="../../employee/timeline/index.html">View timeline</a></li>
-              <li role="separator" class="divider"></li>
-              <li class="dropdown-header">Settings</li>
-              <li><a href="../settings/">Edit information</a></li>
-              <li><a href="#">Preferences</a></li>
+              <li><a href="../../employee/profile/index.php">View profile</a></li>
+              <li style="display: none;"><a  href="#">Edit profile</a></li>
+              <li style="display: none;"><a href="../../employee/timeline/index.html">View timeline</a></li>
+              <li style="display: none;" role="separator" class="divider"></li>
+              <li style="display: none;" class="dropdown-header">Settings</li>
+              <li style="display: none;"><a href="../settings/">Edit information</a></li>
+              <li style="display: none;"><a href="#">Preferences</a></li>
               <li role="separator" class="divider"></li>
               <li><a href="../../auth/as-employee/">Sign out</a></li>
             </ul>
@@ -81,8 +105,10 @@
 						<canvas id="doughnutChart" width="100%"></canvas>
 					</div>
 					<div class="col-md-8 col-xs-8 timeline">
-						<h3 class="medium-heading">Allowance (2016)</h3>
-						<label class="label-annual">Annual leave</label><br>
+						<h3 class="medium-heading">Allowance (<?php echo(date('Y')); ?>)</h3>
+						<label class="label-annual">Annual leave (<?php 
+							echo ceil( $numOfDaysWorked/17);
+							?>) </label><br>
 						<label class="label-sick">Sick leave</label><br>
 						<label class="label-maternity">Maternity leave</label><br>
 						<label class="label-family">Family responsibility leave</label><br>
@@ -97,7 +123,7 @@
 				<canvas id="myChart" width="100%" height="30px"></canvas>
 			</div>
 		</div>
-		<div class="row">
+		<div hidden class="row">
 			<div class="col-md-6 col-xs-12">
 				<h3 class="large-heading">timeline</h3>
 				<div class="row panel">
@@ -135,7 +161,7 @@
 	</div>
 	<footer class="footer">
 		<div class="container">
-			<p class="text-muted">Cap &copy; 2016</p>
+			<p class="text-muted">Cap &copy; 2018</p>
 		</div>
 	</footer>
 	<!--File Browser -->
@@ -197,7 +223,7 @@ data: {
 labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 datasets: [{
 label: 'Leave activity',
-data: [12, 19, 3, 5, 2, 3, 0, 0, 0, 0, 0, 0],
+data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 backgroundColor: [
 'rgba(255, 99, 132, 0.2)',
 'rgba(54, 162, 235, 0.2)',

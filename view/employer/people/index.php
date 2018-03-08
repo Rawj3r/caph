@@ -66,30 +66,30 @@
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
           <li><a href="../../employer/dashboard/index.php">Dashboard</a></li>
-          <li><a href="../../employer/calendar/index.html">Calendar</a></li>
+          <li><a href="../../employer/calendar/index.php">Calendar</a></li>
           <li><a href="../../employer/people/index.php">People</a></li>
-          <li><a href="../../employer/notifications/index.html">Notifications</a></li>
+          <li><a href="../../employer/notifications/index.php">Notifications</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li>
             <a href="../notifications/"><img src="../../assets/brand/bell.svg" width="20"></a>
           </li>
-          <li>
+          <li style="display: none;">
             <a href="../../employer/settings/index.html"><img src="../../assets/brand/help.svg" width="20"></a>
           </li>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Thabang Mangope<span class="caret"></span></a>
-            <ul class="dropdown-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo($controller->getLoggedInUser($loggedInUserID)[0]['surname'].' '.$controller->getLoggedInUser($loggedInUserID)[0]['name']); ?><span class="caret"></span></a>
+          <ul class="dropdown-menu">
               <li class="dropdown-header">Profile</li>
-              <li><a href="../../employer/profile/index.html">View profile</a></li>
-              <li><a href="#">Edit profile</a></li>
-              <li><a href="../../employer/timeline/index.html">View timeline</a></li>
+              <li><a href="../../employer/profile/index.php">View profile</a></li>
+              <li style="display: none;"><a  href="#">Edit profile</a></li>
+              <li style="display: none;"><a href="../../employer/timeline/index.html">View timeline</a></li>
+              <li style="display: none;" role="separator" class="divider"></li>
+              <li style="display: none;" class="dropdown-header">Settings</li>
+              <li style="display: none;"><a href="../settings/">Edit information</a></li>
+              <li style="display: none;"><a href="#">Preferences</a></li>
               <li role="separator" class="divider"></li>
-              <li class="dropdown-header">Settings</li>
-              <li><a href="../settings/">Edit information</a></li>
-              <li><a href="#">Preferences</a></li>
-              <li role="separator" class="divider"></li>
-              <li><a href="../../auth/as-admin/">Sign out</a></li>
+              <li><a href="../../auth/as-employer/">Sign out</a></li>
             </ul>
           </li>
         </ul>
@@ -107,7 +107,7 @@
             <tr>
               <td>Name</td>
               <td>Role</td>
-              <td>Department</td>
+              <td>Export</td>
               <td>Hire date</td>
               <td>Last modified</td>
             </tr>
@@ -120,22 +120,22 @@
             <tr>
               <td width="30%">
                 <div class="media">
-                  <a class="media-left waves-light avatar-listed" data-toggle="modal" data-target="#book-time">
-                    <img class="img-circle z-depth-3" src="../../assets/img/team-avatar-1.jpg" width="60" alt="">
+                  <a class="media-left waves-light avatar-listed" data-toggle="modal" >
+                    <img class="img-circle z-depth-3" src="../../assets/img/team-avatar-1.png" width="60" alt="">
                   </a>
                   <div class="media-body">
                     <h4 class="media-heading"><?php echo $row1['Name'].' '.$row1['Surname']; ?> </h4>
-                    <label class="text-muted"><small><?php echo $row1['JobTitle']; ?></small></label>
+                    <label style="display: none;" class="text-muted"><small></small></label>
                   </div>
                 </div>
               </td>
               <td width="20%">
                 <br>
-                <label class="small">&nbsp;</label>
+                <label class="small"><?php echo $row1['JobTitle']; ?></label>
               </td>
               <td width="20%">
                 <br>
-                <label class="small">Design</label>
+                <label class="small"><a href="export.php?user_id=<?php echo($row1['user_id']); ?>">Export</a></label>
               </td>
               <td width="10%">
                 <br>
@@ -149,7 +149,7 @@
             <?php } ?>
           </tbody>
         </table>
-        <nav aria-label="...">
+        <nav style="display: none;" aria-label="...">
         <ul class="pager">
           <li><a href="#">Previous</a></li>
           <li><a href="#">Next</a></li>
@@ -160,7 +160,7 @@
   </div>
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Cap &copy; 2016</p>
+      <p class="text-muted">Cap &copy; <?php echo(date('Y')); ?></p>
     </div>
   </footer>
   <!-- Leave Modal -->

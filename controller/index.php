@@ -97,6 +97,18 @@ class Controller
 
 	}
 
+	public function respondLeaveApplication($data){
+		$db = Utils::connect();
+		try {
+			$sql = $db->prepare("UPDATE `leaveapplications` SET `Approved` = ?, `ApproverUserId` = ? WHERE `leaveapplications`.`LeaveApplicationId` = ?;");
+			$sql->execute(array($data['approved'], $data['approverID'], $data['leaveID']));
+			header("Location: http://127.0.0.1:90/caphleave/view/employer/notifications/index.php");  
+		} catch (Exception $e) {
+			
+		}
+
+	}
+
 	public function isAdmin($user_id){
 		$db = Utils::connect();
 		$data = array();
@@ -208,7 +220,7 @@ class Controller
 	    $sql->execute(array($first_name, $last_name, $email, $cell, $hireDate, $companyID, $idNumber, $address, $city, $provinceId, $postalCode, $homeNumber, $dateOfBirth, $isManager, $managerId, $jobTitle));
 
 	    $mail = array('sendto' => $email);
-	    Utils::activateAccountemail($mail);
+	    // Utils::activateAccountemail($mail);
 	    return true;
 	    } catch (Exception $e) {
 	    	print_r($e->getMessage());
@@ -332,6 +344,30 @@ class Controller
 
 	}
 
+	public function applyLeave($data){
+		// $data = array();
+
+		$leaveType = $data['leaveType'];
+		$startDate = $data['startDate'];
+		$endDate = $data['endDate'];
+		$managerId = $data['managerId'];
+		$companyId = $data['companyId']; 
+		$reason = $data['reason'];
+		$employeeID = $data['employeeID'];
+
+		try {
+			$db = Utils::connect();
+
+			$sql = $db->prepare("INSERT INTO `leaveapplications` (`LeaveApplicationId`, `LeaveId`, `EmployeeId`, `StartDate`, `EndDate`, `Reason`, `LeaveType`, `Approved`, `managerID`, `DisapprovalReason`, `CompanyId`, `ApproverName`, `ApproverUserId`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, NULL, NULL);");
+			$sql->execute(array($leaveType, $employeeID, $startDate, $endDate, $reason, $leaveType, '', $managerId, $companyId));
+			return true;
+		} catch (Exception $e) {
+			return false;
+		}	
+		return true;
+
+	}
+
 	public function getCompanyID($user_id){
 		$db = Utils::connect();
 		$data = array();
@@ -405,6 +441,61 @@ class Controller
 		// }
 
 		return $sql;
+
+	}
+
+	public function getUserNotifications($user_id){
+		$companyID = '';
+		if($this->getLoggedInUser($user_id)[0]['isManager'] == 1){
+			$companyID = $this->getCompanyID($user_id);			
+		}elseif ($this->getLoggedInUser($user_id)[0]['isManager'] == 2) {
+			$companyID = $this->getLoggedInUser($user_id)[0]['companyId'];
+		}else if ($this->getLoggedInUser($user_id)[0]['isManager'] == 3) {
+			$companyID = $this->getLoggedInUser($user_id)[0]['companyId'];
+		}
+
+		try {
+			$db = Utils::connect();
+			$sql = $db->prepare("SELECT * FROM `leaveapplications` WHERE `EmployeeId` = ? AND `CompanyId` = ?");
+			$sql->execute(array($user_id, $companyID));
+			return $sql;
+		} catch (Exception $e) {
+			echo($e->getMessage());
+			return false;
+		}
+	}
+
+	public function getManagerNotifications($user_id){
+
+		try {
+			$db = Utils::connect();
+			$sql = $db->prepare("SELECT * FROM `leaveapplications` WHERE managerID = ? AND Approved = ?");
+			$sql->execute(array($user_id, 0));
+			return $sql;
+		} catch (Exception $e) {
+			echo($e->getMessage());
+			return false;
+		}
+
+	}
+
+	public function pendingRequest($data){
+
+		$user_id = $data['user_id'];
+		$approved = $data['approved'];
+
+		try {
+
+			$db = Utils::connect();
+			$sql = $db->prepare("SELECT COUNT(*) FROM `leaveapplications` WHERE `managerID` = ? AND `Approved` = ? ;");
+			$sql->execute(array($user_id, $approved));
+			$number_of_rows = $sql->fetchColumn();
+			print_r($number_of_rows);
+			return $number_of_rows;
+
+		} catch (Exception $e) {
+			die($e->getMessage());
+		}
 
 	}
 

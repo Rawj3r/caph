@@ -24,6 +24,8 @@
 	            	alert(\"Invalid email, please check your email\");
 	            </script>";
       		}else{
+      			if ($password == $confirmpassword) {
+
       			if (Utils::validatePhoneNumber($phone_number)) {
       				if (!$controller->isUserExist($data['email'])) {
 						if ($controller->register($data)) {
@@ -47,6 +49,12 @@
 		            	alert(\"Invalid phone number, please check your phone number\");
 		            </script>";
       			}
+      		}else{
+      			 echo"
+		                <script type=\"text/javascript\">
+		                    alert(\"Failed, passwords do not match\");
+		                </script>";
+      		}
       		}
   		}else{
   			echo "

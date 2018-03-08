@@ -1,3 +1,48 @@
+<?php
+   define("PATH_ROOT", realpath($_SERVER["DOCUMENT_ROOT"]) );
+    require_once(PATH_ROOT.'/caphleave/utils/Utils.php');
+    require_once PATH_ROOT.'/caphleave/controller/index.php';
+    Utils::startSession();
+
+    if (!isset($_SESSION['user_id'])) {
+      header("Location: http://127.0.0.1:90/caphleave/view/auth/as-admin/");  
+    }
+
+    $loggedInUserID = $_SESSION['user_id'];
+
+    $controller = new Controller();
+
+    // print_r($loggedInUserID);
+
+    // $companyID = $controller->getLoggedInUser($loggedInUserID)[0]['companyId'];
+    // $managerID = $controller->getLoggedInUser($loggedInUserID)[0]['managerId'];
+    $getManagerNotifications = $controller->getManagerNotifications($loggedInUserID);
+
+    if (isset($_POST['approve'])) {
+
+    $id = $_POST['id'];
+    $approved = $_POST['approved'];
+    $managerId = $loggedInUserID;
+
+    $data = array('approved' => 1, 'approverID' => $managerId, 'leaveID' => $id );
+
+    $controller->respondLeaveApplication($data);          
+
+    }else if (isset($_POST['decline'])) {
+
+      $id = $_POST['id'];
+      $approved = $_POST['approved'];
+      $managerId = $loggedInUserID;
+
+      $data = array('approved' => 2, 'approverID' => $managerId, 'leaveID' => $id );
+
+      $controller->respondLeaveApplication($data);
+            
+    }
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -43,31 +88,31 @@
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-          <li><a href="../../employer/dashboard/index.html">Dashboard</a></li>
-          <li><a href="../../employer/calendar/index.html">Calendar</a></li>
-          <li><a href="../../employer/people/index.html">People</a></li>
-          <li><a href="../../employer/notifications/index.html">Notifications</a></li>
+          <li><a href="../../employer/dashboard/index.php">Dashboard</a></li>
+          <li><a href="../../employer/calendar/index.php">Calendar</a></li>
+          <li><a href="../../employer/people/index.php">People</a></li>
+          <li><a href="../../employer/notifications/index.php">Notifications</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li>
             <a href="../notifications/"><img src="../../assets/brand/bell.svg" width="20"></a>
           </li>
-          <li>
+          <li style="display: none;">
             <a href="../../employer/settings/index.html"><img src="../../assets/brand/help.svg" width="20"></a>
           </li>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Thabang Mangope<span class="caret"></span></a>
-            <ul class="dropdown-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo($controller->getLoggedInUser($loggedInUserID)[0]['surname'].' '.$controller->getLoggedInUser($loggedInUserID)[0]['name']); ?><span class="caret"></span></a>
+              <ul class="dropdown-menu">
               <li class="dropdown-header">Profile</li>
-              <li><a href="../../employer/profile/index.html">View profile</a></li>
-              <li><a href="#">Edit profile</a></li>
-              <li><a href="../../employer/timeline/index.html">View timeline</a></li>
+              <li><a href="../../employer/profile/index.php">View profile</a></li>
+              <li style="display: none;"><a  href="#">Edit profile</a></li>
+              <li style="display: none;"><a href="../../employer/timeline/index.html">View timeline</a></li>
+              <li style="display: none;" role="separator" class="divider"></li>
+              <li style="display: none;" class="dropdown-header">Settings</li>
+              <li style="display: none;"><a href="../settings/">Edit information</a></li>
+              <li style="display: none;"><a href="#">Preferences</a></li>
               <li role="separator" class="divider"></li>
-              <li class="dropdown-header">Settings</li>
-              <li><a href="../settings/">Edit information</a></li>
-              <li><a href="#">Preferences</a></li>
-              <li role="separator" class="divider"></li>
-              <li><a href="../../auth/as-admin/">Sign out</a></li>
+              <li><a href="../../auth/as-employer/">Sign out</a></li>
             </ul>
           </li>
         </ul>
@@ -75,17 +120,20 @@
     </div>
   </nav>
   <div class="container">
+      <?php
+        while ($row = $getManagerNotifications->fetch(PDO::FETCH_ASSOC)){
+      ?>
     <div class="row panel">
       <div class="col-xs-6 col-sm-3 ">
         <div class="row">
           <div class="col-sm-12">
             <div class="media">
               <a class="media-left waves-light avatar-listed">
-                <img class="img-circle z-depth-3" src="../../assets/img/team-avatar-1.jpg" width="60" alt="">
+                <img class="img-circle z-depth-3" src="../../assets/img/team-avatar-1.png" width="60" alt="">
               </a>
               <div class="media-body">
-                <h4 class="media-heading">John Doe</h4>
-                <label class="text-muted"><small>UI developer</small></label>
+                <h4 class="media-heading"><?php echo($controller->getLoggedInUser($row['EmployeeId'])[0]['surname'].' '.$controller->getLoggedInUser($row['EmployeeId'])[0]['name']); ?></h4>
+                <label class="text-muted"><small><?php echo $controller->getLoggedInUser($loggedInUserID)[0]['jobTitle']; ?></small></label>
               </div>
             </div>
           </div>
@@ -94,94 +142,64 @@
       <div class="col-xs-12 col-sm-3 ">
         <div class="row">
           <div class="col-sm-3 col-xs-3">
-            <span><b>DEC</b></span><br>
-            <span>08</span><br>
-            <span><b>2016</b></span>
+             <?php
+              $from = $row['StartDate'];
+              $from = explode('-', $from);
+              $dateObj   = DateTime::createFromFormat('!m', $from[1]);
+              $monthName = $dateObj->format('M'); // March
+            ?>
+            <span><b><?php echo $monthName ?></b></span><br>
+            <span><?php echo($from[2]) ?></span><br>
+            <span><b><?php echo($from[0]) ?></b></span>
           </div>
           <div class="col-sm-6 col-xs-6">
             <center><img class="" src="../../assets/brand/next.svg" width="50" /><br>
-              <label class="small">4 days Sick leave</label>
+              <label class="small"><?php echo Utils::getWorkingDays($row['StartDate'], $row['EndDate']);?> days <?php echo(Utils::getLeaveTypeNames($row['LeaveType'])); ?></label>
             </center>
           </div>
           <div class="col-sm-3 col-xs-3">
-            <span><b>DEC</b></span><br>
-            <span>08</span><br>
-            <span><b>2016</b></span>
+            <?php
+              $from = $row['EndDate'];
+              $from = explode('-', $from);
+              $dateObj   = DateTime::createFromFormat('!m', $from[1]);
+              $monthName = $dateObj->format('M'); // March
+            ?>
+            <span><b><?php echo $monthName ?></b></span><br>
+            <span><?php echo($from[2]) ?></span><br>
+            <span><b><?php echo($from[0]) ?></b></span>
           </div>
         </div>
       </div>
       <div class="col-xs-12 col-sm-3 ">
         <div class="row">
           <div class="col-sm-12">
-            <label class="small">Today<br><span class="col-neu-3">Some discription</span></label>
+            <label class="small">Comments<br><span class="col-neu-3"><?php echo $row['Reason']; ?></span></label>
           </div>
         </div>
       </div>
       <div class="col-xs-6 col-sm-3 ">
         <div class="row">
-          <div class="col-sm-12">
-            <a href=""><span class="flaticon-success flush-left"> </span> approve</a>
-            <a href="" data-toggle="modal" data-target="#decline-book-time"><span class="flaticon-error"></span> decline</a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row panel">
-      <div class="col-xs-6 col-sm-3 ">
-        <div class="row">
-          <div class="col-sm-12">
-            <div class="media">
-              <a class="media-left waves-light avatar-listed">
-                <img class="img-circle z-depth-3" src="../../assets/img/team-avatar-1.jpg" width="60" alt="">
-              </a>
-              <div class="media-body">
-                <h4 class="media-heading">John Doe</h4>
-                <label class="text-muted"><small>UI developer</small></label>
-                <span class="label label-danger">Cancellation request</span>
+          <form name="approve" action="index.php" method="POST">
+            <div class="form-group">
+              <input type="hidden" name="id" value="<?php echo($row['LeaveApplicationId']); ?>">
+              <input type="submit" name="approve" value="approve" class="flaticon-success flush-left" />
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xs-12 col-sm-3 ">
-        <div class="row">
-          <div class="col-sm-3 col-xs-3">
-            <span><b>DEC</b></span><br>
-            <span>08</span><br>
-            <span><b>2016</b></span>
-          </div>
-          <div class="col-sm-6 col-xs-6">
-            <center><img class="" src="../../assets/brand/next.svg" width="50" /><br>
-              <label class="small">4 days Sick leave</label>
-            </center>
-          </div>
-          <div class="col-sm-3 col-xs-3">
-            <span><b>DEC</b></span><br>
-            <span>08</span><br>
-            <span><b>2016</b></span>
-          </div>
-        </div>
-      </div>
-      <div class="col-xs-12 col-sm-3 ">
-        <div class="row">
-          <div class="col-sm-12">
-            <label class="small">Today<br><span class="col-neu-3">Some discription</span></label>
-          </div>
-        </div>
-      </div>
-      <div class="col-xs-6 col-sm-3 ">
-        <div class="row">
-          <div class="col-sm-12">
-            <a href=""><span class="flaticon-success flush-left"> </span> approve</a>
-            <a href="" data-toggle="modal" data-target="#decline-book-time"><span class="flaticon-error"></span> decline</a>
-          </div>
+          </form>
+          <form name="decline" action="index.php" method="POST">
+            <div class="form-group">
+              <input type="hidden" name="id" value="<?php echo($row['LeaveApplicationId']); ?>">
+
+              <input type="submit" name="decline" value="decline  " class="flaticon-success flush-left" />
+              </div>
+          </form>
         </div>
       </div>
     </div>
+  <?php } ?>
   </div>
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Cap &copy; 2016</p>
+      <p class="text-muted">Cap &copy; <?php echo(date('Y')); ?></p>
     </div>
   </footer>
   <!-- Leave Modal -->

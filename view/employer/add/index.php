@@ -36,14 +36,16 @@
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 echo"
                 <script type=\"text/javascript\">
-                    alert(\"Invalid email, please check your email\");
+                    alert(\"Invalid email, please check email\");
                 </script>";
             }else{
                 if (Utils::validatePhoneNumber($cell)) {
 
-                    $data = array('first_name' => $firstname, 'last_name' => $lastname, 'email' => $email, 'isManager' => $ismanager, 'HireDate' => $date_hired, 'CompanyId' => $companyID, 'IdNumber' => $identitynumber, 'Address1' => $address, 'City' => $city, 'ProvinceId' => $province, 'PostalCode' => $code, 'HomeNumber' => $tel, 'DateOfBirth' => $dob, 'ManagerId' => $manager, 'JobTitle' => $jobtitle);
+                    $data = array('first_name' => $firstname, 'last_name' => $lastname, 'email' => $email, 'isManager' => $ismanager, 'HireDate' => $date_hired, 'CompanyId' => $companyID, 'IdNumber' => $identitynumber, 'Address1' => $address, 'City' => $city, 'ProvinceId' => $province, 'PostalCode' => $code, 'HomeNumber' => $tel, 'DateOfBirth' => $dob, 'ManagerId' => $manager, 'JobTitle' => $jobtitle, 'cell' => $cell);
+
+                    print_r($data);
                     if ($controller->addEmployee($data)) {
-                        header("Location: http://127.0.0.1:90/caphleave/view/employer/people/index.php");  
+                        // header("Location: http://127.0.0.1:90/caphleave/view/employer/people/index.php");  
                     }else{
                         echo"
                 <script type=\"text/javascript\">
@@ -127,31 +129,31 @@
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-          <li><a href="../../employer/dashboard/index.html">Dashboard</a></li>
-          <li><a href="../../employer/calendar/index.html">Calendar</a></li>
-          <li><a href="../../employer/people/index.html">People</a></li>
-          <li><a href="../../employer/notifications/index.html">Notifications</a></li>
+          <li><a href="../../employer/dashboard/index.php">Dashboard</a></li>
+          <li><a href="../../employer/calendar/index.php">Calendar</a></li>
+          <li><a href="../../employer/people/index.php">People</a></li>
+          <li><a href="../../employer/notifications/index.php">Notifications</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li>
             <a href="../notifications/"><img src="../../assets/brand/bell.svg" width="20"></a>
           </li>
-          <li>
+          <li style="display: none;">
             <a href="../../employer/settings/index.html"><img src="../../assets/brand/help.svg" width="20"></a>
           </li>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Thabang Mangope<span class="caret"></span></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo($controller->getLoggedInUser($loggedInUserID)[0]['surname'].' '.$controller->getLoggedInUser($loggedInUserID)[0]['name']); ?><span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li class="dropdown-header">Profile</li>
-              <li><a href="../../employer/profile/index.html">View profile</a></li>
-              <li><a href="#">Edit profile</a></li>
-              <li><a href="../../employer/timeline/index.html">View timeline</a></li>
+              <li><a href="../../employer/profile/index.php">View profile</a></li>
+              <li style="display: none;"><a  href="#">Edit profile</a></li>
+              <li style="display: none;"><a href="../../employer/timeline/index.html">View timeline</a></li>
+              <li style="display: none;" role="separator" class="divider"></li>
+              <li style="display: none;" class="dropdown-header">Settings</li>
+              <li style="display: none;"><a href="../settings/">Edit information</a></li>
+              <li style="display: none;"><a href="#">Preferences</a></li>
               <li role="separator" class="divider"></li>
-              <li class="dropdown-header">Settings</li>
-              <li><a href="../settings/">Edit information</a></li>
-              <li><a href="#">Preferences</a></li>
-              <li role="separator" class="divider"></li>
-              <li><a href="../../auth/as-admin/">Sign out</a></li>
+              <li><a href="../../auth/as-employer/">Sign out</a></li>
             </ul>
           </li>
         </ul>
@@ -205,11 +207,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                  <div class="col-md-12">
+                                  <div style="display: none;" class="col-md-12">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="phone-input" class="small-heading">Birthday</label>
+                                                <label for="phone-input" class="small-heading">Birth date</label>
                                                 <input type="date" name="dob" class="form-control no-radius" id="phone-input">
                                             </div>
                                         </div>
@@ -275,14 +277,14 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="phone-input" class="small-heading">Phone number (Mobile)</label>
-                                        <input type="text" name="cell" class="form-control no-radius" id="phone-input" placeholder="+27 ">
+                                        <input type="text" name="cell" class="form-control no-radius" id="phone-input" placeholder="+27721234567">
                                     </div>
                                 </div>
-                                <div class="col-md-12">
+                                <div " class="col-md-12">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="phone-input" class="small-heading">Birthday</label>
+                                                <label for="phone-input" class="small-heading">Birth date</label>
                                                 <input type="date" name="dob" class="form-control no-radius" id="phone-input">
                                             </div>
                                         </div>

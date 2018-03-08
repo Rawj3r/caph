@@ -1,3 +1,20 @@
+<?php
+   define("PATH_ROOT", realpath($_SERVER["DOCUMENT_ROOT"]) );
+    require_once(PATH_ROOT.'/caphleave/utils/Utils.php');
+    require_once PATH_ROOT.'/caphleave/controller/index.php';
+    Utils::startSession();
+
+    if (!isset($_SESSION['user_id'])) {
+      header("Location: http://127.0.0.1:90/caphleave/view/auth/as-admin/");  
+    }
+
+    $loggedInUserID = $_SESSION['user_id'];
+
+    $controller = new Controller();
+    $getUserNotification = $controller->getUserNotifications($loggedInUserID);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -43,28 +60,28 @@
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-					<li><a href="../../employee/dashboard/index.html">Dashboard</a></li>
-          <li><a href="../../employee/calendar/index.html">Calendar</a></li>
-          <li><a href="../../employee/notifications/index.html">Notifications</a></li>
+					<li><a href="../../employee/dashboard/index.php">Dashboard</a></li>
+          <li><a href="../../employee/calendar/index.php">Calendar</a></li>
+          <li><a href="../../employee/notifications/index.php">Notifications</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li>
             <a href="../notifications/"><img src="../../assets/brand/bell.svg" width="20"></a>
           </li>
-          <li>
+          <li style="display:none">
             <a href=""><img src="../../assets/brand/help.svg" width="20"></a>
           </li>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Thabang Mangope<span class="caret"></span></a>
-            <ul class="dropdown-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo($controller->getLoggedInUser($loggedInUserID)[0]['surname'].' '.$controller->getLoggedInUser($loggedInUserID)[0]['name']); ?><span class="caret"></span></a>
+               <ul class="dropdown-menu">
               <li class="dropdown-header">Profile</li>
-              <li><a href="../../employee/profile/index.html">View profile</a></li>
-              <li><a href="#">Edit profile</a></li>
-              <li><a href="../../employee/timeline/index.html">View timeline</a></li>
-              <li role="separator" class="divider"></li>
-              <li class="dropdown-header">Settings</li>
-              <li><a href="../settings/">Edit information</a></li>
-              <li><a href="#">Preferences</a></li>
+              <li><a href="../../employee/profile/index.php">View profile</a></li>
+              <li style="display: none;"><a  href="#">Edit profile</a></li>
+              <li style="display: none;"><a href="../../employee/timeline/index.html">View timeline</a></li>
+              <li style="display: none;" role="separator" class="divider"></li>
+              <li style="display: none;" class="dropdown-header">Settings</li>
+              <li style="display: none;"><a href="../settings/">Edit information</a></li>
+              <li style="display: none;"><a href="#">Preferences</a></li>
               <li role="separator" class="divider"></li>
               <li><a href="../../auth/as-employee/">Sign out</a></li>
             </ul>
@@ -74,17 +91,21 @@
     </div>
   </nav>
   <div class="container">
+     <?php
+        while ($row = $getUserNotification->fetch(PDO::FETCH_ASSOC)){
+              // print_r($row1);
+      ?>
     <div class="row panel">
       <div class="col-xs-6 col-sm-3 ">
         <div class="row">
           <div class="col-sm-12">
             <div class="media">
               <a class="media-left waves-light avatar-listed">
-                <img class="img-circle z-depth-3" src="../../assets/img/team-avatar-1.jpg" width="60" alt="">
+                <img class="img-circle z-depth-3" src="../../assets/img/team-avatar-1.png" width="60" alt="">
               </a>
               <div class="media-body">
-                <h4 class="media-heading">John Doe</h4>
-                <label class="text-muted"><small>UI developer</small></label>
+                <h4 class="media-heading"><?php echo($controller->getLoggedInUser($loggedInUserID)[0]['surname'].' '.$controller->getLoggedInUser($loggedInUserID)[0]['name']); ?></h4>
+                <label class="text-muted"><small><?php echo $controller->getLoggedInUser($loggedInUserID)[0]['jobTitle']; ?></small></label>
               </div>
             </div>
           </div>
@@ -93,83 +114,48 @@
       <div class="col-xs-12 col-sm-3 ">
         <div class="row">
           <div class="col-sm-3 col-xs-3">
-            <span><b>DEC</b></span><br>
-            <span>08</span><br>
-            <span><b>2016</b></span>
+            <?php
+              $from = $row['StartDate'];
+              $from = explode('-', $from);
+              $dateObj   = DateTime::createFromFormat('!m', $from[1]);
+              $monthName = $dateObj->format('M'); // March
+            ?>
+            <span><b><?php echo $monthName ?></b></span><br>
+            <span><?php echo($from[2]) ?></span><br>
+            <span><b><?php echo($from[0]) ?></b></span>
           </div>
           <div class="col-sm-6 col-xs-6">
             <center><img class="" src="../../assets/brand/next.svg" width="50" /><br>
-              <label class="small">4 days Sick leave</label>
+              <label class="small"><?php echo Utils::getWorkingDays($row['StartDate'], $row['EndDate']);?> days <?php echo(Utils::getLeaveTypeNames($row['LeaveType'])); ?></label>
             </center>
           </div>
           <div class="col-sm-3 col-xs-3">
-            <span><b>DEC</b></span><br>
-            <span>08</span><br>
-            <span><b>2016</b></span>
+             <?php
+              $from = $row['EndDate'];
+              $from = explode('-', $from);
+              $dateObj   = DateTime::createFromFormat('!m', $from[1]);
+              $monthName = $dateObj->format('M'); // March
+            ?>
+            <span><b><?php echo $monthName ?></b></span><br>
+            <span><?php echo($from[2]) ?></span><br>
+            <span><b><?php echo($from[0]) ?></b></span>
           </div>
         </div>
       </div>
       <div class="col-xs-12 col-sm-6">
         <div class="row">
           <div class="col-sm-12">
-            <label class="small label label-success">Approved by Thabang Mangope (line manager)</label>
+            <label class="small label label-success"><?php echo(Utils::leaveStatus($row['Approved'])); ?> </label>
           </div>
         </div>
       </div>
     </div>
-    <div class="row panel">
-      <div class="col-xs-6 col-sm-3 ">
-        <div class="row">
-          <div class="col-sm-12">
-            <div class="media">
-              <a class="media-left waves-light avatar-listed">
-                <img class="img-circle z-depth-3" src="../../assets/img/team-avatar-1.jpg" width="60" alt="">
-              </a>
-              <div class="media-body">
-                <h4 class="media-heading">John Doe</h4>
-                <label class="text-muted"><small>UI developer</small></label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xs-12 col-sm-3 ">
-        <div class="row">
-          <div class="col-sm-3 col-xs-3">
-            <span><b>DEC</b></span><br>
-            <span>08</span><br>
-            <span><b>2016</b></span>
-          </div>
-          <div class="col-sm-6 col-xs-6">
-            <center><img class="" src="../../assets/brand/next.svg" width="50" /><br>
-              <label class="small">4 days Sick leave</label>
-            </center>
-          </div>
-          <div class="col-sm-3 col-xs-3">
-            <span><b>DEC</b></span><br>
-            <span>08</span><br>
-            <span><b>2016</b></span>
-          </div>
-        </div>
-      </div>
-      <div class="col-xs-12 col-sm-6">
-        <div class="row">
-          <div class="col-sm-12">
-            <label class="small label label-danger">Declined by Thabang Mangope (line manager)</label>
-          </div>
-        </div>
-      </div>
-      <div class="col-xs-12 col-sm-12 col-md-12">
-        <a>reason for decline</a><br>
-        <!--<labe class="small">
-          Some reason for declin here
-        </labe>-->
-      </div>
-    </div>
+     <?php } ?>
+    
   </div>
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Cap &copy; 2016</p>
+      <p class="text-muted">Cap &copy; <?php echo(date('Y')); ?></p>
     </div>
   </footer>
   <!-- Leave Modal -->

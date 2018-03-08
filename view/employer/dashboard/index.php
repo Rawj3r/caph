@@ -61,10 +61,10 @@
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-          <li><a href="../../employer/dashboard/index.html">Dashboard</a></li>
-          <li><a href="../../employer/calendar/index.html">Calendar</a></li>
-          <li><a href="../../employer/people/index.html">People</a></li>
-          <li><a href="../../employer/notifications/index.html">Notifications</a></li>
+          <li><a href="../../employer/dashboard/index.php">Dashboard</a></li>
+          <li><a href="../../employer/calendar/index.php">Calendar</a></li>
+          <li><a href="../../employer/people/index.php">People</a></li>
+          <li><a href="../../employer/notifications/index.php">Notifications</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li>
@@ -74,18 +74,18 @@
             <a href="../../employer/settings/index.html"><img src="../../assets/brand/help.svg" width="20"></a>
           </li>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Nkosi R<span class="caret"></span></a>
-            <ul class="dropdown-menu">
-              <li><a href="../../employer/profile/index.html">View profile</a></li>
-              <li><a href="../profile/">View profile</a></li>
-              <li><a href="#">Edit profile</a></li>
-              <li><a href="../../employer/timeline/index.html">View timeline</a></li>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo($controller->getLoggedInUser($loggedInUserID)[0]['surname'].' '.$controller->getLoggedInUser($loggedInUserID)[0]['name']); ?><span class="caret"></span></a>
+             <ul class="dropdown-menu">
+              <li class="dropdown-header">Profile</li>
+              <li><a href="../../employer/profile/index.php">View profile</a></li>
+              <li style="display: none;"><a  href="#">Edit profile</a></li>
+              <li style="display: none;"><a href="../../employer/timeline/index.html">View timeline</a></li>
+              <li style="display: none;" role="separator" class="divider"></li>
+              <li style="display: none;" class="dropdown-header">Settings</li>
+              <li style="display: none;"><a href="../settings/">Edit information</a></li>
+              <li style="display: none;"><a href="#">Preferences</a></li>
               <li role="separator" class="divider"></li>
-              <li class="dropdown-header">Settings</li>
-              <li><a href="../settings/">Edit information</a></li>
-              <li><a href="#">Preferences</a></li>
-              <li role="separator" class="divider"></li>
-              <li><a href="../../auth/as-admin/">Sign out</a></li>
+              <li><a href="../../auth/as-employer/">Sign out</a></li>
             </ul>
           </li>
         </ul>
@@ -96,10 +96,10 @@
     <div class="row panel">
       <div class="col-md-12 col-xs-12">
         <div class="row">
-          <div class="col-md-3 col-xs-3"><a href="../../employer/people/index.html"><center><h2><?php echo $numOfEmpoyees; ?></h2><span>employees</span><br><img src="../../assets/brand/group.svg" width="20" alt="group" /></center><a/></div>
+          <div class="col-md-3 col-xs-3"><a href="../../employer/people/index.php"><center><h2><?php echo $numOfEmpoyees; ?></h2><span>employees</span><br><img src="../../assets/brand/group.svg" width="20" alt="group" /></center><a/></div>
           <div class="col-md-3 col-xs-3"><a href="#"><center><h2><?php echo $numOfManagers ?></h2><span>managers</span><br><img src="../../assets/brand/user-1.svg" width="20" alt="group" /></center></a></div>
-          <div class="col-md-3 col-xs-3"><a href="#"><center><h2>8</h2><span>teams</span><br><img src="../../assets/brand/group.svg" width="20" alt="group" /></center></a></div>
-          <div class="col-md-3 col-xs-3"><a href="../../employer/calendar/index.html"><center><h2>1908</h2><span>total days left</span><br><img src="../../assets/brand/calendar.svg" width="20" alt="group" /></center></a></div>
+          <div class="col-md-3 col-xs-3"><a href="#"><center><h2>0</h2><span>teams</span><br><img src="../../assets/brand/group.svg" width="20" alt="group" /></center></a></div>
+          <div class="col-md-3 col-xs-3"><a href="../../employer/calendar/index.php"><center><h2>0</h2><span>total days left</span><br><img src="../../assets/brand/calendar.svg" width="20" alt="group" /></center></a></div>
         </div>
       </div>
     </div>
@@ -111,27 +111,27 @@
             <label>summary</label>
             <ul class="list-group">
               <li class="list-group-item">
-                <span class="badge">14</span>
+                <span class="badge">0</span>
                 <small>Annual leave</small>
               </li>
               <li class="list-group-item">
-                <span class="badge">14</span>
+                <span class="badge">0</span>
                 <small>Sick leave</small>
               </li>
               <li class="list-group-item">
-                <span class="badge">14</span>
+                <span class="badge">0</span>
                 <small>Maternity leave</small>
               </li>
               <li class="list-group-item">
-                <span class="badge">14</span>
+                <span class="badge">0</span>
                 <small>Family responsibility leave</small>
               </li>
               <li class="list-group-item">
-                <span class="badge">14</span>
+                <span class="badge">0</span>
                 <small>Study leave</small>
               </li>
               <li class="list-group-item">
-                <span class="badge">14</span>
+                <span class="badge">0</span>
                 <small>Leave for religious holidays</small>
               </li>
             </ul>
@@ -139,7 +139,7 @@
           </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row" style="display: none;">
       <div class="col-md-6 col-xs-12">
         <h3 class="large-heading">timeline</h3>
         <div class="row panel">
@@ -171,7 +171,7 @@
   </div>
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Cap &copy; 2016</p>
+      <p class="text-muted">Cap &copy; <?php echo(date('Y')); ?></p>
     </div>
   </footer>
   <!--File Browser -->
@@ -233,7 +233,7 @@
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     datasets: [{
     label: 'Leave activity',
-    data: [12, 19, 3, 5, 2, 3, 0, 0, 0, 0, 0, 0],
+    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     backgroundColor: [
     'rgba(255, 99, 132, 0.2)',
     'rgba(54, 162, 235, 0.2)',
