@@ -36,21 +36,22 @@
                 <ul class="nav masthead-nav">
                   <li class="active"><a href="#">home</a></li>
                   <li><a href="./auth/as-admin/">Sign In</a></li>
-                  <li><a href="#">Support</a></li>
-                </ul>
+                  <li><a href="#">Contact</a></li>
+                </ul><a href=""></a>
               </nav>
             </div>
           </div>
           <div class="inner cover">
-            <h1 class="cover-heading animated fadeIn">hello.</h1>
-            <p class="lead animated fadeIn">Say something cool about Cap-H in a single sentence.</p>
+            <h1 class="cover-heading animated fadeIn" style="color: #eee">We're big believers in welcome gifts, so sign up now and get a 30 day free trial.</h1>
+            <p class="lead animated fadeIn"></p>
             <p class="lead animated fadeIn">
               <a href="auth/as-admin/signup/" class="btn btn-lg btn-primary">Get started</a>
             </p>
           </div>
           <div class="mastfoot">
+            <img src="assets/img/pay.png"> 
             <div class="inner">
-              <p>Cap &copy; 2016</p>
+              <p>Cap &copy; 2018</p>
             </div>
           </div>
         </div>

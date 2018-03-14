@@ -490,12 +490,40 @@ class Controller
 			$sql = $db->prepare("SELECT COUNT(*) FROM `leaveapplications` WHERE `managerID` = ? AND `Approved` = ? ;");
 			$sql->execute(array($user_id, $approved));
 			$number_of_rows = $sql->fetchColumn();
-			print_r($number_of_rows);
+			// print_r($number_of_rows);
 			return $number_of_rows;
 
 		} catch (Exception $e) {
 			die($e->getMessage());
 		}
+
+	}
+
+	public function countAnnualLeaveDays($user_id){
+
+		$numberOfAnnualDays = '';
+		$numberOfDaysWorked = '';
+
+		try{
+			$db = Utils::connect();
+
+			$sql = "SELECT StartDate, EndDate FROM `leaveapplications` WHERE `managerID` = ? AND `LeaveType` = 1 AND Approved = 1";
+			$sql->execute(array($user_id));
+			while($result = $sql->fetch()){
+				$numberOfAnnualDays += Utils::getWorkingDays($result['StartDate'], $result['EndDate']);
+			}
+
+		} catch(Exception $e){
+			echo($e->getMessage());
+		}
+
+		try{
+			$sql = "SELECT `HireDate` FROM `caphusers` WHERE `ManagerId` = ?";
+			$sql->execute(array($user_id));
+		} catch(Exception $e){
+			echo($e->getMessage());
+		}
+
 
 	}
 

@@ -175,7 +175,7 @@
 								<input type="text" class="form-control no-radius" id="phone-input" name="phone_number" placeholder="+27 ">
 							</div>
 							<br>
-							<center><label class="label-heading">Clicking <b>Create account</b> means that you agree to the <a href="">Cap-H Services Agreement</a> and <a href="">privacy and cookies statement</a>.</label></center>
+							<center><label class="label-heading">Clicking <b>Create account</b> means that you agree to the <a href="../../agreement.html">Cap-H Services Agreement</a> and <a href="../../policy.html">privacy and cookies statement</a>.</label></center>
 							<br>
 							<!--button type="submit" class="btn btn-primary btn-block no-radius">Create account</button
                             <a href="../company-info/index.html" class="btn btn-primary btn-block no-radius">Create account</a>-->
