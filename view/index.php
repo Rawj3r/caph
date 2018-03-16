@@ -42,7 +42,8 @@
             </div>
           </div>
           <div class="inner cover">
-            <h1 class="cover-heading animated fadeIn" style="color: #eee">We're big believers in welcome gifts, so sign up now and get a 30 day free trial.</h1>
+            <h3 class="cover-heading animated fadeIn" style="color: #eee">We&#39;re big believers in <br>welcome gifts, so sign<br>up now and get<br> a 30 day free trial.</h3>
+      
             <p class="lead animated fadeIn"></p>
             <p class="lead animated fadeIn">
               <a href="auth/as-admin/signup/" class="btn btn-lg btn-primary">Get started</a>
